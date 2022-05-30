@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import MainLogo from "./mainlogo";
-const Links = ["Dashboard", "Projects", "Team"];
+const Links = ["Home", "Site Updates", "Scrape Stats"];
 
 const NavLink = ({children}) => ( //Fix the children thing?
   <Link
@@ -66,8 +66,6 @@ export default function NewNavLink() {
           </Box>
         ) : null}
       </Box>
-
-      <Box p={4}>Main Content Here</Box>
     </>
   );
 }

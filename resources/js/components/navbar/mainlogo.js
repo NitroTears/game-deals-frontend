@@ -5,7 +5,7 @@ const MainLogo = (props) => {
   return (
     <Box {...props}>
       <Text fontSize="lg" fontWeight="bold">
-        Logo
+        Gamedeals.com.au
       </Text>
     </Box>
   );
