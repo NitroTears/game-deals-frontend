@@ -3,6 +3,7 @@ import {
   Thead,
   Tbody,
   Tfoot,
+  Box,
   Tr,
   Th,
   Td,
@@ -11,80 +12,116 @@ import {
   useToast,
   useTab,
   chakra,
+  HStack,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useTable, useSortBy } from "react-table";
 import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
 
 const DealsTable = (props) => {
-  const columns = React.useMemo(() => [
-    {
-      Header: "Title",
-      accessor: "title",
-    },
-    {
-      Header: "Store",
-      accessor: "store_name",
-    },
-    {
-      Header: () => {
-        return (
-          <>
-            Previous / <br />
-            Current Price
-          </>
-        );
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Title",
+        accessor: "title",
       },
-      accessor: "price",
-      isNumeric: true,
-    },
-    {
-      Header: "Percent Diff.",
-      accessor: "diff",
-      isNumeric: true,
-    },
-    {
-      Header: "Scraped Time",
-      accessor: "time",
-    },
-  ], []);
+      {
+        Header: "Store",
+        accessor: "store",
+      },
+      {
+        Header: () => {
+          return (
+            <>
+              Previous / <br />
+              Current Price
+            </>
+          );
+        },
+        accessor: "price",
+        isNumeric: true,
+      },
+      {
+        Header: "% Diff.",
+        accessor: "diff",
+        isNumeric: true,
+        maxWidth: "25px",
+      },
+      {
+        Header: "Scraped Time",
+        accessor: "time",
+      },
+    ],
+    []
+  );
 
-  const data = React.useMemo(() => [ //TEST DATA
-    {
-      title: "THE TITLE",
-      store_name: "THE Store",
-      price: "$$$$",
-      diff: "45%",
-      time: "WEDNESDAY THE 15TH",
-    },
-    {
-      title: "THE 2nd TITLE",
-      store_name: "THE Store",
-      price: "$$$$",
-      diff: "45%",
-      time: "WEDNESDAY THE 15TH",
-    },
-    {
-      title: "THE 3rd TITLE",
-      store_name: "THE Store",
-      price: "$$$$",
-      diff: "45%",
-      time: "WEDNESDAY THE 15TH",
-    },
-  ], []);
+  //REMEMBER: The next task is to transform the data currently being requested, into a row for the table. Make a Row Component!
+  //REMEMBER: Keep on tinkering with the headers, and then move on to the rows
 
-  const priceDisplay = (previousPrice, priceDisplay) => {
+  const priceDisplay = (previousPrice, currentPrice) => {
     // render current price with previous,
     // or just current if no discount.
+    if (!previousPrice) {
+      return (
+        <>
+          <span>New!</span>
+          <br />${currentPrice}
+        </>
+      );
+    }
     return (
-      <Tr>
-        <Td>Final Fantasy VII and Final Fantasy VIII Remastered</Td>
-        <Td>ozgameshop.com</Td>
-        <Td isNumeric>
-          $80 <br /> <b>$50</b>
-        </Td>
-        <Td isNumeric>33%</Td>
-        <Td isNumeric>2 weeks ago</Td>
+      <>
+        <span style={{ textDecoration: "line-through" }}>
+          {" "}
+          ${previousPrice}
+        </span>
+        <br />${currentPrice}
+      </>
+    );
+  };
+
+  const data = React.useMemo(() => {
+    const { dealsData } = props;
+    const formattedDeals = [];
+    dealsData.forEach((deal) => {
+      formattedDeals.push({
+        id: deal.item_id,
+        title: deal.title,
+        price: priceDisplay(deal.prv_price, deal.price), // `$${deal.price}`
+        store: deal.store_name,
+        diff: deal.perc_difference
+          ? `${parseFloat(deal.perc_difference).toFixed(2)}%`
+          : "-",
+        time: deal.price_scraped_timestamp,
+      });
+    });
+    return formattedDeals;
+  }, [props.dealsData]);
+
+  const renderHeaderRow = (headerGroup) => {
+    return (
+      <Tr {...headerGroup.getHeaderGroupProps()}>
+        {headerGroup.headers.map((column) => (
+          <Th
+            key={column.Header}
+            {...column.getHeaderProps(column.getSortByToggleProps())}
+            isNumeric={column.isNumeric}
+            maxWidth={column.maxWidth}
+          >
+            <Box>
+              <>{column.render("Header")}</>
+              <chakra.span pl="2">
+                {column.isSorted ? (
+                  column.isSortedDesc ? (
+                    <TriangleDownIcon aria-label="sorted descending" />
+                  ) : (
+                    <TriangleUpIcon aria-label="sorted ascending" />
+                  )
+                ) : null}
+              </chakra.span>
+            </Box>
+          </Th>
+        ))}
       </Tr>
     );
   };
@@ -101,27 +138,7 @@ const DealsTable = (props) => {
   return (
     <Table size="sm" {...getTableProps()}>
       <Thead>
-        {headerGroups.map((headerGroup) => (
-          <Tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <Th
-                {...column.getHeaderProps(column.getSortByToggleProps())}
-                isNumeric={column.isNumeric}
-              >
-                {column.render("Header")}
-                <chakra.span pl="4">
-                  {column.isSorted ? (
-                    column.isSortedDesc ? (
-                      <TriangleDownIcon aria-label="sorted descending" />
-                    ) : (
-                      <TriangleUpIcon aria-label="sorted ascending" />
-                    )
-                  ) : null}
-                </chakra.span>
-              </Th>
-            ))}
-          </Tr>
-        ))}
+        {headerGroups.map((headerGroup) => renderHeaderRow(headerGroup))}
       </Thead>
       <Tbody {...getTableBodyProps()}>
         {rows.map((row) => {

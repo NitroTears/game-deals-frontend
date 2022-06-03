@@ -10,19 +10,19 @@ const DealsHome = (props) => {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
+  // Get the deals from the API.
   useEffect(() => {
     if (!loading) {
       setLoading(true);
       axios
         .get("/api/get-data")
         .then((deals) => {
-          // console.log(deals.data);
           setDealsData(deals.data);
           toast({
-            title: "An error has occurred",
-            description: `${deals.data.title}`,
+            title: `"${deals.data[0].title}" and more!`,
+            description: `${deals.data.length} Deal(s) Grabbed.`,
             position: "bottom-right",
-            status: "error",
+            status: "success",
             duration: 3500,
             isClosable: true,
           });
@@ -45,7 +45,7 @@ const DealsHome = (props) => {
          </Center>
         ) : (
           <>
-            <Box p={3}>Main Content Here</Box>
+            {/* <Box p={3}>Main Content Here</Box> */}
             <DealsTable dealsData={dealsData} />
             {/* <DataTable /> */}
           </>

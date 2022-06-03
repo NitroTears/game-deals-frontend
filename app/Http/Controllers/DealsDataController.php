@@ -10,6 +10,6 @@ class DealsDataController extends Controller
 {
     public function getData()
     {
-        return DealsData::first();
+        return DealsData::limit(20)->get();
     }
 }
