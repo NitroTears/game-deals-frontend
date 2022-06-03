@@ -8,12 +8,17 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
+  Button,
+  useColorMode
 } from "@chakra-ui/react";
+
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import MainLogo from "./mainlogo";
-const Links = ["Home", "Site Updates", "Scrape Stats"];
 
-const NavLink = ({children}) => ( //Fix the children thing?
+
+const NavLink = (
+  { children } //Fix the children thing?
+) => (
   <Link
     px={2}
     py={1}
@@ -29,8 +34,9 @@ const NavLink = ({children}) => ( //Fix the children thing?
 );
 
 export default function NewNavLink() {
+  const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const Links = ["Home", "Site Updates", "Scrape Stats"];
   return (
     <>
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
@@ -47,6 +53,9 @@ export default function NewNavLink() {
               ))}
             </HStack>
           </HStack>
+          <Button size={"sm"} onClick={toggleColorMode} display={{ base: "none", md: "inline" }}>
+            {colorMode === "light" ? "Dark" : "Light"}
+          </Button>
           <IconButton
             size={"md"}
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
@@ -59,6 +68,9 @@ export default function NewNavLink() {
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
+              <Button onClick={toggleColorMode}>
+                {colorMode === "light" ? "Dark" : "Light"}
+              </Button>
               {Links.map((link) => (
                 <NavLink key={link}>{link}</NavLink>
               ))}
