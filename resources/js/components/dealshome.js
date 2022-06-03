@@ -1,8 +1,7 @@
-import { Container, TableContainer, Box, useToast, Spinner, Center } from "@chakra-ui/react";
+import { Container, useToast, Spinner, Center } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import NewNavLink from "./navbar/index";
 import DealsTable from "./deals-table/dealsTable";
-import DataTable from "./deals-table/dataTable";
 import axios from "axios";
 
 const DealsHome = (props) => {
@@ -45,9 +44,7 @@ const DealsHome = (props) => {
          </Center>
         ) : (
           <>
-            {/* <Box p={3}>Main Content Here</Box> */}
             <DealsTable dealsData={dealsData} />
-            {/* <DataTable /> */}
           </>
         )}
 

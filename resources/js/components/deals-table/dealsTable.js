@@ -1,24 +1,21 @@
+/* eslint-disable react/jsx-key */
 import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Box,
   Tr,
   Th,
   Td,
-  TableCaption,
-  TableContainer,
-  useToast,
-  useTab,
-  chakra,
   HStack,
+  Badge,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React from "react";
 import { useTable, useSortBy } from "react-table";
-import { TriangleDownIcon, TriangleUpIcon } from "@chakra-ui/icons";
+import { TriangleDownIcon, TriangleUpIcon, UpDownIcon } from "@chakra-ui/icons";
 
 const DealsTable = (props) => {
+  const priceColumnId = "price"; //in case this HAD to be changed, it is declared here as a variable just in case.
   const columns = React.useMemo(
     () => [
       {
@@ -33,13 +30,14 @@ const DealsTable = (props) => {
         Header: () => {
           return (
             <>
-              Previous / <br />
-              Current Price
+              <p style={{ fontSize: ".7em" }}>Previous /</p>Current
             </>
           );
         },
-        accessor: "price",
+        accessor: priceColumnId,
         isNumeric: true,
+        maxWidth: "40px",
+
       },
       {
         Header: "% Diff.",
@@ -55,27 +53,30 @@ const DealsTable = (props) => {
     []
   );
 
-  //REMEMBER: The next task is to transform the data currently being requested, into a row for the table. Make a Row Component!
+  // REMEMBER:
   //REMEMBER: Keep on tinkering with the headers, and then move on to the rows
 
-  const priceDisplay = (previousPrice, currentPrice) => {
-    // render current price with previous,
-    // or just current if no discount.
-    if (!previousPrice) {
-      return (
-        <>
-          <span>New!</span>
-          <br />${currentPrice}
-        </>
-      );
-    }
+  const priceDisplay = (currentPrice, previousPrice = null) => {
     return (
       <>
-        <span style={{ textDecoration: "line-through" }}>
-          {" "}
-          ${previousPrice}
+        <span
+          style={{
+            fontSize: ".7em",
+            textDecoration: previousPrice ? "line-through" : "",
+          }}
+        >
+          {previousPrice ? (
+            `$${previousPrice}`
+          ) : (
+            <>
+              <Badge variant="subtle" colorScheme="blue" fontSize="0.9em">
+                New!
+              </Badge>
+            </>
+          )}
         </span>
-        <br />${currentPrice}
+        <br />
+        <p style={{ paddingBottom: "0.2em" }}>${currentPrice}</p>
       </>
     );
   };
@@ -87,8 +88,8 @@ const DealsTable = (props) => {
       formattedDeals.push({
         id: deal.item_id,
         title: deal.title,
-        price: priceDisplay(deal.prv_price, deal.price), // `$${deal.price}`
-        store: deal.store_name,
+        prv_price: parseFloat(deal.prv_price),
+        price: parseFloat(deal.price),
         diff: deal.perc_difference
           ? `${parseFloat(deal.perc_difference).toFixed(2)}%`
           : "-",
@@ -108,28 +109,25 @@ const DealsTable = (props) => {
             isNumeric={column.isNumeric}
             maxWidth={column.maxWidth}
           >
-            <Box>
-              <>{column.render("Header")}</>
-              <chakra.span pl="2">
+            <HStack>
+              <Box>{column.render("Header")}</Box>
+              <Box>
                 {column.isSorted ? (
                   column.isSortedDesc ? (
                     <TriangleDownIcon aria-label="sorted descending" />
                   ) : (
                     <TriangleUpIcon aria-label="sorted ascending" />
                   )
-                ) : null}
-              </chakra.span>
-            </Box>
+                ) : (
+                  <UpDownIcon aria-label="not-sorted" />
+                )}
+              </Box>
+            </HStack>
           </Th>
         ))}
       </Tr>
     );
   };
-
-  useEffect(() => {
-    const { dealsData } = props;
-    console.log(dealsData);
-  }, [props.dealsData]);
 
   //Prep for the table
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -146,8 +144,17 @@ const DealsTable = (props) => {
           return (
             <Tr {...row.getRowProps()}>
               {row.cells.map((cell) => (
-                <Td {...cell.getCellProps()} isNumeric={cell.column.isNumeric}>
-                  {cell.render("Cell")}
+                <Td
+                  {...cell.getCellProps()}
+                  py={"0.4"}
+                  isNumeric={cell.column.isNumeric}
+                >
+                  {cell.column.id == priceColumnId
+                    ? priceDisplay(
+                        cell.row.original.price,
+                        cell.row.original?.prv_price
+                      )
+                    : cell.render("Cell")}
                 </Td>
               ))}
             </Tr>
@@ -156,51 +163,6 @@ const DealsTable = (props) => {
       </Tbody>
     </Table>
   );
-  // return (
-  //   <>
-  //     <Table size="sm">
-  //       <Thead>
-  //         <Tr>
-  //           <Th>Title</Th>
-  //           <Th>Store</Th>
-  //           <Th isNumeric>
-  //             Previous / <br />
-  //             Current Price
-  //           </Th>
-  //           <Th isNumeric>% Diff.</Th>
-  //           <Th>Scraped Time</Th>
-  //         </Tr>
-  //       </Thead>
-  //       <Tbody>
-  //         {/* Replace this with the real data*/}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //         {priceDisplay()}
-  //       </Tbody>
-  //       <Tfoot>
-  //         <Tr>
-  //           <Th>Title</Th>
-  //           <Th>Store</Th>
-  //           <Th isNumeric>
-  //             Previous / <br />
-  //             Current Price
-  //           </Th>
-  //           <Th isNumeric>% Diff.</Th>
-  //           <Th>Scraped Time</Th>
-  //         </Tr>
-  //       </Tfoot>
-  //     </Table>
-  //   </>
-  // );
 };
 
 export default DealsTable;
