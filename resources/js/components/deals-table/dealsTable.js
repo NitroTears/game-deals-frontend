@@ -16,6 +16,7 @@ import {
 import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
 import { TriangleDownIcon, TriangleUpIcon, UpDownIcon } from "@chakra-ui/icons";
+import PropTypes from "prop-types";
 
 const DealsTable = (props) => {
   const priceColumnId = "price"; // in case this HAD to be changed, it is declared here as a variable just in case.
@@ -94,6 +95,9 @@ const DealsTable = (props) => {
 
   const data = React.useMemo(() => {
     const { dealsData } = props;
+    if (!dealsData) {
+      return [];
+    }
     const formattedDeals = [];
     dealsData.forEach((deal) => {
       formattedDeals.push({
@@ -228,6 +232,10 @@ const DealsTable = (props) => {
       <Tfoot></Tfoot>
     </Table>
   );
+};
+
+DealsTable.propTypes = {
+  dealsData: PropTypes.array.isRequired,
 };
 
 export default DealsTable;
