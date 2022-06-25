@@ -1,6 +1,5 @@
 import {
   Container,
-  useToast,
   Spinner,
   Center,
   Stack,
@@ -15,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import NewNavLink from "./navbar/index";
 import DealsTable from "./deals-table/dealsTable";
 import axios from "axios";
+import { useGamedealsHelpers } from "./gamedealsHelpers";
 
 const DealsHome = (props) => {
   const [dealsData, setDealsData] = useState([]);
@@ -22,29 +22,26 @@ const DealsHome = (props) => {
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [selectedPhysical, setSelectedPhysical] = useState(null);
   const [searchName, setSearchName] = useState("");
-  const toast = useToast();
+  const { successToast, errorToast } = useGamedealsHelpers();
 
   // Get the deals from the API on Page load.
   useEffect(() => {
     if (!loading) {
+      let dealParams = {};
       setLoading(true);
       axios
-        .get("/api/get-data")
+        .get("/api/get-data", { params: dealParams })
         .then((deals) => {
           setDealsData(deals.data);
           console.log(deals.data);
-          toast({
-            title: `"${deals.data[0].title}" and more!`,
-            description: `${deals.data.length} Deal(s) Grabbed.`,
-            position: "bottom-right",
-            status: "success",
-            duration: 3500,
-            isClosable: true,
-          });
+          successToast(
+            `"${deals.data[0].title}" and more!`,
+            `${deals.data.length} Deal(s) Grabbed.`
+          );
           setLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+            errorToast(err);
           setLoading(false);
         });
     }

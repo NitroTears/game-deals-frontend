@@ -49,7 +49,6 @@ const DealsTable = (props) => {
         accessor: "diff",
         isNumeric: true,
         maxWidth: "25px",
-
       },
       // {
       //   Header: "Record Low",
@@ -88,7 +87,9 @@ const DealsTable = (props) => {
           )}
         </span>
         <br />
-        <Text py={"0.1em"} fontSize={"md"}>${currentPrice}</Text>
+        <Text py={"0.1em"} fontSize={"md"}>
+          ${currentPrice}
+        </Text>
       </>
     );
   };
@@ -168,7 +169,7 @@ const DealsTable = (props) => {
               src={process.env.MIX_IMAGE_PREFIX + "/" + cell.row.original.image}
               alt="Game Image"
             />
-            <Box boxSize={"0.1rem"}/>
+            <Box boxSize={"0.1rem"} />
             {cell.render("Cell")}
           </HStack>
           // <Box boxSize={"75px"}>
