@@ -116,7 +116,6 @@ const DealsTable = (props) => {
     return (
       <Tr {...headerGroup.getHeaderGroupProps()}>
         {headerGroup.headers.map((column) => {
-          console.log(column.disableSortBy);
           return (
             <Th
               key={column.Header}
@@ -148,7 +147,6 @@ const DealsTable = (props) => {
   };
 
   const renderCell = (cell) => {
-    console.log(cell.getCellProps());
     switch (cell.column.id) {
       case priceColumnId:
         return priceDisplay(

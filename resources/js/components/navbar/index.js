@@ -17,7 +17,7 @@ import MainLogo from "./mainlogo";
 
 
 const NavLink = (
-  { children } //Fix the children thing?
+  { children } //TODO: Fix the children thing?
 ) => (
   <Link
     px={2}
