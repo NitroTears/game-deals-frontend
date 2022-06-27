@@ -17,17 +17,20 @@ import axios from "axios";
 import { useGamedealsHelpers } from "./gamedealsHelpers";
 
 const DealsHome = (props) => {
+  const { successToast, errorToast } = useGamedealsHelpers();
   const [dealsData, setDealsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [selectedPhysical, setSelectedPhysical] = useState(null);
   const [searchName, setSearchName] = useState("");
-  const { successToast, errorToast } = useGamedealsHelpers();
 
   // Get the deals from the API on Page load.
   useEffect(() => {
+    searchDeals();
+  }, []);
+
+  const searchDeals = (dealParams = { searchType: "all" }) => {
     if (!loading) {
-      let dealParams = {};
       setLoading(true);
       axios
         .get("/api/get-data", { params: dealParams })
@@ -45,11 +48,19 @@ const DealsHome = (props) => {
           setLoading(false);
         });
     }
-  }, []);
-
-  const searchDeals = () => {
     //Use search constraints to get deals from backend.
   };
+
+  const onSearchButtonClicked = (e) => {
+    const params = {
+      title: searchName ? searchName : null, 
+      physicality: selectedPhysical,
+      platform: selectedPlatform,
+      searchType: e.target.id
+
+    }
+    searchDeals(params);
+  }
 
   return (
     <>
@@ -94,10 +105,10 @@ const DealsHome = (props) => {
                 </Text>
               </Center>
               <ButtonGroup size="sm" isAttached>
-                <Button id="deals" colorScheme="orange" onClick={searchDeals}>
+                <Button id="deals" colorScheme="orange" onClick={onSearchButtonClicked}>
                   Deals
                 </Button>
-                <Button id="new" colorScheme="yellow" onClick={searchDeals}>
+                <Button id="new" colorScheme="yellow" onClick={onSearchButtonClicked}>
                   New Games
                 </Button>
               </ButtonGroup>
