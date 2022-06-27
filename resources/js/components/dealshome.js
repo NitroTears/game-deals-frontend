@@ -93,10 +93,10 @@ const DealsHome = (props) => {
                 </Text>
               </Center>
               <ButtonGroup size="sm" isAttached>
-                <Button colorScheme="orange" onClick={searchDeals}>
+                <Button id="deals" colorScheme="orange" onClick={searchDeals}>
                   Deals
                 </Button>
-                <Button colorScheme="yellow" onClick={searchDeals}>
+                <Button id="new" colorScheme="yellow" onClick={searchDeals}>
                   New Games
                 </Button>
               </ButtonGroup>

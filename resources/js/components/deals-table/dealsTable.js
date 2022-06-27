@@ -1,4 +1,5 @@
 /* eslint-disable react/jsx-key */
+/*global process*/
 import {
   Table,
   Thead,
@@ -64,10 +65,31 @@ const DealsTable = (props) => {
     []
   );
 
-  // REMEMBER:
-  //REMEMBER: Keep on tinkering with the headers, and then move on to the rows
+  const priceDisplay = (deal) => {
+    const currentPrice = deal.price;
+    const previousPrice = deal?.prv_price;
+    let badge = null;
 
-  const priceDisplay = (currentPrice, previousPrice = null) => {
+    if (!previousPrice) {
+      badge = (
+        <Badge variant="subtle" colorScheme="blue" fontSize="0.8em">
+          New!
+        </Badge>
+      );
+    } else if (deal.price < 35.0 && deal.price > 12) {
+      //deal.price == deal?.min_price
+      badge = (
+        <Badge variant="subtle" colorScheme="red" fontSize="0.7em">
+          Matches Lowest Ever!
+        </Badge>
+      );
+    } else if (deal.price <= 12.0) {
+      badge = (
+        <Badge variant="subtle" colorScheme="orange" fontSize="0.7em">
+          Lowest Ever!
+        </Badge>
+      );
+    }
     return (
       <>
         <span
@@ -76,17 +98,19 @@ const DealsTable = (props) => {
             textDecoration: previousPrice ? "line-through" : "",
           }}
         >
-          {previousPrice ? (
-            `$${previousPrice}`
-          ) : (
+          {badge ? (
             <>
-              <Badge variant="subtle" colorScheme="blue" fontSize="0.9em">
-                New!
-              </Badge>
+              {badge}
+              <br />
             </>
-          )}
+          ) : null}
+          {previousPrice ? (
+            <>
+              {`$${previousPrice}`}
+              <br />
+            </>
+          ) : null}
         </span>
-        <br />
         <Text py={"0.1em"} fontSize={"md"}>
           ${currentPrice}
         </Text>
@@ -154,36 +178,23 @@ const DealsTable = (props) => {
   const renderCell = (cell) => {
     switch (cell.column.id) {
       case priceColumnId:
-        return priceDisplay(
-          cell.row.original.price,
-          cell.row.original?.prv_price
-        );
+        return priceDisplay(cell.row.original);
       case titleColumnId:
         return (
           <HStack>
             <Image
-              boxSize="80px"
+              py={"0.3rem"}
+              boxSize="75px"
               maxWidth={"75px"}
               maxHeight={"75px"}
               fit={"contain"}
               src={process.env.MIX_IMAGE_PREFIX + "/" + cell.row.original.image}
+              fallbackSrc={"/img/no-box-art.jpeg"}
               alt="Game Image"
             />
             <Box boxSize={"0.1rem"} />
             {cell.render("Cell")}
           </HStack>
-          // <Box boxSize={"75px"}>
-
-          // </Box>
-          // <Box maxW={"75px"} maxH={"75px"}>
-
-          // <img
-          //   // height={"75px"}
-          //   style={{objectFit: "scale-down"}}
-          //   alt="Game Image"
-          //   src={process.env.MIX_IMAGE_PREFIX + "/" + cell.row.original.image}
-          //   />
-          //   </Box>
         );
       default:
         return cell.render("Cell");
@@ -215,12 +226,11 @@ const DealsTable = (props) => {
         {rows.map((row) => {
           prepareRow(row);
           return (
-            <Tr {...row.getRowProps()}>
+            <Tr mx={"10px"} {...row.getRowProps()}>
               {row.cells.map((cell) => (
                 <Td
                   {...cell.getCellProps()}
                   py={"0.2"}
-                  // mx={"0"}
                   isNumeric={cell.column.isNumeric}
                 >
                   {renderCell(cell)}
