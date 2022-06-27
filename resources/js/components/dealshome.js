@@ -81,6 +81,7 @@ const DealsHome = (props) => {
               <option value="digi">Digital Only</option>
             </Select>
             <Input
+              title="search for deals"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
               placeholder="Search for Deals"
