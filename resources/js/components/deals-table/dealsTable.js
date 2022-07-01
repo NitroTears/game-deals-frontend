@@ -18,9 +18,11 @@ import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
 import { TriangleDownIcon, TriangleUpIcon, UpDownIcon } from "@chakra-ui/icons";
 import PropTypes from "prop-types";
+import { format, formatDistance } from "date-fns";
 
 const DealsTable = (props) => {
   const priceColumnId = "price"; // in case this HAD to be changed, it is declared here as a variable just in case.
+  const timeColumnId = "time"; // as above
   const titleColumnId = "title"; // as above
 
   const columns = React.useMemo(
@@ -44,6 +46,7 @@ const DealsTable = (props) => {
         accessor: priceColumnId,
         isNumeric: true,
         maxWidth: "45px",
+        Cell: (cell) => priceDisplay(cell.row.original),
       },
       {
         Header: () => <>% Diff</>,
@@ -59,7 +62,21 @@ const DealsTable = (props) => {
       // },
       {
         Header: "Scraped Time",
-        accessor: "time",
+        accessor: timeColumnId,
+        Cell: (cell) => (
+          <>
+            {cell.row.original.time
+              ? format(cell.row.original.time, "cccc p").toString()
+              : null}
+            <br />
+            {formatDistance(cell.row.original.time, new Date(), {
+              addSuffix: true,
+            }).toString()}
+          </>
+        ),
+        sortType: (a, b) => {
+          return new Date(a.values.time) - new Date(b.values.time);
+        },
       },
     ],
     []
@@ -135,7 +152,7 @@ const DealsTable = (props) => {
         diff: deal.perc_difference
           ? `${parseFloat(deal.perc_difference).toFixed(2)}%`
           : "-",
-        time: deal.price_scraped_timestamp,
+        time: new Date(deal.price_scraped_timestamp),
       });
     });
     return formattedDeals;
@@ -177,8 +194,6 @@ const DealsTable = (props) => {
 
   const renderCell = (cell) => {
     switch (cell.column.id) {
-      case priceColumnId:
-        return priceDisplay(cell.row.original);
       case titleColumnId:
         return (
           <HStack>

@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use Log;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+
 class DealsDataController extends Controller
 {
     public function getData(Request $request)
