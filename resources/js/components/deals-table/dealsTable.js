@@ -13,6 +13,7 @@ import {
   Image,
   Tfoot,
   Text,
+  useColorModeValue
 } from "@chakra-ui/react";
 import React from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
@@ -86,6 +87,8 @@ const DealsTable = (props) => {
     const currentPrice = deal.price;
     const previousPrice = deal?.prv_price;
     let badge = null;
+    const random = Math.floor(Math.random() * 11);
+    const value = useColorModeValue("black", "yellow")
 
     if (!previousPrice) {
       badge = (
@@ -96,14 +99,43 @@ const DealsTable = (props) => {
     } else if (deal.price < 35.0 && deal.price > 12) {
       //deal.price == deal?.min_price
       badge = (
-        <Badge variant="subtle" colorScheme="red" fontSize="0.7em">
+        <Badge variant="subtle" colorScheme="orange" fontSize="0.7em">
           Matches Lowest Ever!
         </Badge>
       );
     } else if (deal.price <= 12.0) {
       badge = (
-        <Badge variant="subtle" colorScheme="orange" fontSize="0.7em">
+        <Badge variant="subtle" colorScheme="red" fontSize="0.7em">
           Lowest Ever!
+        </Badge>
+      );
+    }
+    if (random >= 9) { // TODO: replace the random value with the actual logic for the PS+ inclusion
+      badge = badge ? (
+        <>
+          {badge}
+          <br />
+          <Badge variant="subtle" colorScheme="yellow" textColor={value} fontSize="0.7em">
+            Included in PS+ Extra
+          </Badge>
+        </>
+      ) : (
+        <Badge variant="subtle" colorScheme="yellow" textColor={value} fontSize="0.7em">
+          Included in PS+ Extra
+        </Badge>
+      );
+    } else if (random > 7) {
+      badge = badge ? (
+        <>
+          {badge}
+          <br />
+          <Badge variant="subtle" colorScheme="yellow" textColor={value} fontSize="0.7em">
+            Included in PS+ Premium
+          </Badge>
+        </>
+      ) : (
+        <Badge variant="subtle" colorScheme="yellow" textColor={value} fontSize="0.7em">
+          Included in PS+ Premium
         </Badge>
       );
     }
