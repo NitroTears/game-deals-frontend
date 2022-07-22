@@ -12,6 +12,16 @@ use Illuminate\Support\Facades\Validator;
 
 class DealsDataController extends Controller
 {
+    /**
+     * The list of stores that sell physical games
+     */
+    private const PhysicalStores = [
+        'amazon.com.au',
+        'ozgameshop.com',
+        'mightyape.com.au'
+        // ect...
+    ];
+
     public function getData(Request $request)
     {
         Log::Debug($request->all());
@@ -30,14 +40,16 @@ class DealsDataController extends Controller
             $deals = DealsData::whereNotNull("min_price");
             // This runs on page load, if searchType == 'all', no other parameters are looked at.
             switch ($request->searchType) {
-                case 'all':
-                    $deals = $deals->limit(30)->get();
-                    return $deals;
-                case 'deals':
-                // logic for 'deals' goes here
                 case 'new':
                     $deals = $deals->whereNull('prv_price');
                     break;
+                case 'deals':
+                    $deals = $deals->whereNotNull('prv_price');
+                    break;
+                // logic for 'deals' goes here
+                case 'all':
+                    $deals = $deals->limit(30)->get();
+                    return $deals;
             }
             if (isset($request->physicality)) {
                 switch ($request->physicality) {
