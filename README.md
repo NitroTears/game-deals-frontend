@@ -12,3 +12,4 @@ Some packages I have used in this project include:
   - chakra-ui/icons (1.8.7)
 - **PHP**
   - laravel-framework (9.2)
+    - requires PHP 8.0.2 or higher
