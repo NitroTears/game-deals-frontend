@@ -36,7 +36,7 @@ const NavLink = (
 export default function NewNavLink() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const Links = ["Home", "Site Updates", "Scrape Stats"];
+  const Links = ["Home", "Site Updates", "Scrape Stats", "Playstation Plus Extra / Premium List"];
   return (
     <>
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>

@@ -9,12 +9,17 @@ import {
   ButtonGroup,
   Text,
   VStack,
+  UnorderedList,
+  ListItem,
+  ListIcon,
+  Alert,
+  Icon,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import NewNavLink from "./navbar/index";
 import DealsTable from "./deals-table/dealsTable";
 import axios from "axios";
-import { useGamedealsHelpers } from "./gamedealsHelpers";
+import { useGamedealsHelpers } from "./shared/gamedealsHelpers";
 
 const DealsHome = (props) => {
   const { successToast, errorToast } = useGamedealsHelpers();
@@ -23,6 +28,7 @@ const DealsHome = (props) => {
   const [selectedPlatform, setSelectedPlatform] = useState(null);
   const [selectedPhysical, setSelectedPhysical] = useState(null);
   const [searchName, setSearchName] = useState("");
+  const [showMessage, setShowMessage] = useState(true);
 
   // Get the deals from the API on Page load.
   useEffect(() => {
@@ -38,13 +44,13 @@ const DealsHome = (props) => {
           setDealsData(deals.data);
           console.log(deals.data);
           successToast(
-            `"${deals.data[0].title}" and more!`,
+            `Got deals sucessfully! "${deals.data[0].title}" and more!`,
             `${deals.data.length} Deal(s) Grabbed.`
           );
           setLoading(false);
         })
         .catch((err) => {
-            errorToast(err);
+          errorToast(err);
           setLoading(false);
         });
     }
@@ -53,20 +59,47 @@ const DealsHome = (props) => {
 
   const onSearchButtonClicked = (e) => {
     const params = {
-      title: searchName ? searchName : null, 
+      title: searchName ? searchName : null,
       physicality: selectedPhysical,
       platform: selectedPlatform,
-      searchType: e.target.id
-
-    }
+      searchType: e.target.id,
+    };
     searchDeals(params);
-  }
+  };
 
   return (
     <>
       <NewNavLink {...props} />
       <Container maxW={"container.xl"}>
         <>
+          {showMessage ? (
+            <Alert status="info">
+              <VStack paddingRight={"20px"}>
+
+              <Text>
+                Some notes from me about the current progress
+              </Text>
+              <Button size={'sm'} onClick={() => setShowMessage(false)}>
+                Click to Close this message
+              </Button>
+              </VStack>
+              <UnorderedList>
+                <ListItem>
+                  If an error toast appears and cannot find deals, it means it
+                  couldn't get them from the database.
+                </ListItem>
+                <ListItem>
+                  None of the 'links' in the navbar work, because those pages
+                  don't exist yet.
+                </ListItem>
+                <ListItem>
+                  When changing the colour theme, the labels on the games
+                  change, thats okay because it's randomised on render at the
+                  moment.
+                </ListItem>
+              </UnorderedList>
+            </Alert>
+          ) : null}
           <Stack
             alignItems={"flex-end"}
             direction={["column", "row"]}
@@ -105,10 +138,18 @@ const DealsHome = (props) => {
                 </Text>
               </Center>
               <ButtonGroup size="sm" isAttached>
-                <Button id="deals" colorScheme="orange" onClick={onSearchButtonClicked}>
+                <Button
+                  id="deals"
+                  colorScheme="orange"
+                  onClick={onSearchButtonClicked}
+                >
                   Deals
                 </Button>
-                <Button id="new" colorScheme="yellow" onClick={onSearchButtonClicked}>
+                <Button
+                  id="new"
+                  colorScheme="yellow"
+                  onClick={onSearchButtonClicked}
+                >
                   New Games
                 </Button>
               </ButtonGroup>
